@@ -32,6 +32,36 @@ The most useful are `t.Errorf()` and `t.Fatalf()`. The following table describes
 | `t.Fatal()`      | Combination of `Log()` and `FailNow()`. |
 | `t.Fatalf()`     | Combination of `Logf()` and `FailNow()`. |
 
+## Table-driven tests
+
+Also called data-driven and parameterized tests. They verify code with varying inputs. You can also implement subtests that run tests in isolation.
+
+Imagine table-driven tests as actual tables, where the headers are struct fields, and the rows become individual slices in the test cases:
+
+| product     | rating  | price |
+|:------------|---------|-------|
+| prod one    | 5       | 20    |
+| prod two    | 10      | 30    |
+| prod three  | 15      | 40    |
+
+You can represent this in a test as follows:
+
+```go
+func TestTable(t *testing.T) {
+    type product struct {
+        product string
+        rating  int
+        price   float64
+    }
+    testCases := []product {
+        {"prod one", 5, 20},
+        {"prod two", 10, 30},
+        {"prod three", 15, 40},
+    }
+}
+```
+
+
 # Packages
 
 A package name should describe what it provides, not what it does.

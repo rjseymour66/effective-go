@@ -32,3 +32,8 @@ func Parse(rawurl string) (*URL, error) {
 		Path:   path,
 	}, nil
 }
+
+// Port returns the port number from the URL Host field.
+func (u *URL) Port() string {
+	return ""
+}

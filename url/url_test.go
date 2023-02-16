@@ -24,3 +24,12 @@ func TestParse(t *testing.T) {
 		t.Errorf("Parse(%q).Path = %q, want %q", rawurl, got, want)
 	}
 }
+
+func TestURLPort(t *testing.T) {
+	const in = "foo.com:80"
+
+	u := &URL{Host: in}
+	if got, want := u.Port(), "80"; got != want {
+		t.Errorf("for host %q; got %q, want %q", in, got, want)
+	}
+}
