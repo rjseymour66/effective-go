@@ -66,20 +66,56 @@ func TestTable(t *testing.T) {
 
 A package name should describe what it provides, not what it does.
 
+When you write external tests, use a `_test` suffix. For example, a package that contains external tests for the `url` package is `url_test`.
+
+## Import external packages
+
+When you import an external pacakge, you list the module name in the `go.mod` file, followed by the path to the specific library from the project root. For example, if the `go.mod` file contains the following:
+
+```go 
+module url
+...
+```
+
+Then you import the module as follows:
+```go
+import "url/path/to/library"
+```
+
+Commonly, packages are publically available in repositories, and the module name is the path to the root of the repository:
+
+```go 
+module github.com/rjs/url-parser
+...
+```
+
+In this case, the import statement for the `parser` package within this repo is as follows:
+
+```go
+import "github.com/rjs/url-parser/parser"
+```
+
 
 # Formatting verbs
 
 | verb | Definition | Usage |
 |------|:-----------|:------|
-| %q   | Wraps the given string in double quotes.
+| %q   | Wraps the given string in double quotes. | |
+| %#v  | Prints the Go syntax representation of the value. | t.Errorf("%#v.String()\ngot  %q\nwant %q", u, got, want) |
 
 # Misc
 
-## Empty interface
+## Docs 
 
-Go versions prior to 1.18 used the empty interface: `interface{}`. This is an interface that did not implement any methods, so any type satisfied it. In Go 1.18 and later, `interface{}` was replaced with `any`. 
+You can generate docs that include your [testable examples](#testable-examples) with `godoc`. The following command installs the latest version:
 
-## Shortif declaration
+```shell
+$ go install golang.org/x/tools/cmd/godoc@latest
+```
+
+
+
+## Short-if declaration
 
 `if variable := value; condition`
 
@@ -87,5 +123,36 @@ For example:
 ```go
 if err := json.Marshal(&val); err != nil {
     // handle error
+}
+```
+## Testable examples
+
+A _testable example_ is live documentation for code. You write a testable example to demonstrate the package API to other developers. The API includes the exported identifiers, such as functions, methods, etc. A testable example never goes out of date.
+
+The testing package runs testable examples and checks their results, but it does not report successes or failures.
+
+# Interfaces
+
+When a type satisfies an interface, you say _type X is a Y_. For example, _URL is a Stringer_ or _Parser is a Reader_.
+
+## Empty interface
+
+Go versions prior to 1.18 used the empty interface: `interface{}`. This is an interface that did not implement any methods, so any type satisfied it. In Go 1.18 and later, `interface{}` was replaced with `any`. 
+
+## Stringer
+
+`Stringer` prints the string representation of the object. The `fmt.Print[x]` packages detect when a type has a `Stringer` method, so it calls that method for proper formatting.
+
+The `Stringer` interface:
+```go
+type Stringer interface {
+    String() string
+}
+```
+
+Implementation example:
+```go
+func (u *URL) String() string {
+	return fmt.Sprintf("%s://%s/%s", u.Scheme, u.Host, u.Path)
 }
 ```

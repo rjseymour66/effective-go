@@ -2,6 +2,7 @@ package url
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -33,7 +34,25 @@ func Parse(rawurl string) (*URL, error) {
 	}, nil
 }
 
-// Port returns the port number from the URL Host field.
+// Port returns the port number from u.HOst, without the leading colon.
 func (u *URL) Port() string {
-	return ""
+	i := strings.Index(u.Host, ":")
+	if i < 0 {
+		return ""
+	}
+	return u.Host[i+1:]
+}
+
+// Hostname returns u.Host, and strips any port number, if present.
+func (u *URL) Hostname() string {
+	i := strings.Index(u.Host, ":")
+	if i < 0 {
+		return u.Host
+	}
+	return u.Host[:i]
+}
+
+// String reassembles the URL into a URL string.
+func (u *URL) String() string {
+	return fmt.Sprintf("%s://%s/%s", u.Scheme, u.Host, u.Path)
 }
