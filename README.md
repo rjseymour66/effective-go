@@ -105,7 +105,28 @@ import "github.com/rjs/url-parser/parser"
 
 # Misc
 
-## Docs 
+# Documentation 
+
+## Testable examples
+
+[Blog post](https://go.dev/blog/examples)
+
+A _testable example_ is live documentation for code. You write a testable example to demonstrate the package API to other developers. The API includes the exported identifiers, such as functions, methods, etc. A testable example never goes out of date.
+
+The testing package runs testable examples and checks their results, but it does not report successes or failures.
+
+### Naming conventions
+
+Testable examples use the following naming conventions:
+
+| Signature                  | Description |
+|:---------------------------|:------------|
+| `func Example()`             | Example for the entire package. |
+| `func ExampleParse()`        | Example for the `Parse` function. |
+| `func ExampleURL()`          | Example for the `URL` type. |
+| `func ExampleURL_Hostname()` | Example for the `Hostname` method on the `URL` type. |
+
+## godoc server
 
 You can generate docs that include your [testable examples](#testable-examples) with `godoc`. The following command installs the latest version:
 
@@ -113,6 +134,15 @@ You can generate docs that include your [testable examples](#testable-examples) 
 $ go install golang.org/x/tools/cmd/godoc@latest
 ```
 
+To view any `ExampleXxx` functions as Go documentation, run the `go doc` server with the following command:
+```shell
+$ godoc -play -http ":6060"
+```
+To show additional examples of the same type, use the `_xxx()` suffix on the function name. For example:
+```go
+func ExampleURL(){...}
+func ExampleURL_fields(){...}
+```
 
 
 ## Short-if declaration
@@ -125,11 +155,6 @@ if err := json.Marshal(&val); err != nil {
     // handle error
 }
 ```
-## Testable examples
-
-A _testable example_ is live documentation for code. You write a testable example to demonstrate the package API to other developers. The API includes the exported identifiers, such as functions, methods, etc. A testable example never goes out of date.
-
-The testing package runs testable examples and checks their results, but it does not report successes or failures.
 
 # Interfaces
 

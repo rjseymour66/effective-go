@@ -1,3 +1,3 @@
-module github.com/rjseymour66/effective-go
+module url
 
 go 1.19
