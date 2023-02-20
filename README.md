@@ -17,6 +17,35 @@ if err != nil {
 
 To make a test fail and stop execution, use the `t.FailNow()` method.
 
+## Test coverage
+
+View how much of your code is covered by tests:
+```shell
+$ go test -coverprofile cover.out`
+```
+The coverage output file is optional. By convention, the coverage profile file is named `cover.out`.
+
+Use a coverage output file to view test coverage by function:
+```shell
+$ go tool cover -func=cover.out
+```
+
+After you create the `coverprofile` file, use the `cover` go tool to generate HTML output to view what code is and is not covered. This command opens the coverage output in the browser:
+```shell
+$ go tool cover -html=cover.out
+```
+
+To create the HTML file, but not open it in the browser automatically:
+```shell
+$ go tool cover -html=cover.out -o coverage.html
+```
+The cover tool uses three colors to identify code coverage:
+- grey: not tracked by the coverage tool
+- green: sufficiently tested
+- red: not covered by tests
+
+To 
+
 ## Methods
 
 The most useful are `t.Errorf()` and `t.Fatalf()`. The following table describes all available `t.*` test methods:
@@ -103,7 +132,14 @@ import "github.com/rjs/url-parser/parser"
 | %q   | Wraps the given string in double quotes. | |
 | %#v  | Prints the Go syntax representation of the value. | t.Errorf("%#v.String()\ngot  %q\nwant %q", u, got, want) |
 
-# Misc
+# nil
+
+You can execute a method on a `nil` type. A method is a function that takes the receiver as a hidden first parameter. So, when you have a `nil` type, Go can find the method function to run, but it does not have anything to execute it on. For example, the Go compiler does the following when calling the `String()` method on a `nil` typ:
+
+```go
+var u *URL
+u.String() // (*url.URL).String(u)
+```
 
 # Documentation 
 
@@ -113,7 +149,25 @@ import "github.com/rjs/url-parser/parser"
 
 A _testable example_ is live documentation for code. You write a testable example to demonstrate the package API to other developers. The API includes the exported identifiers, such as functions, methods, etc. A testable example never goes out of date.
 
-The testing package runs testable examples and checks their results, but it does not report successes or failures.
+The testing package runs testable examples and checks their results, but it does not report successes or failures:
+
+```go
+func ExampleURL_fields() {
+	u, err := url.Parse("https://foo.com/go")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(u.Scheme)
+	fmt.Println(u.Host)
+	fmt.Println(u.Path)
+	fmt.Println(u)
+	// Output:
+	// https
+	// foo.com
+	// go
+	// https://foo.com/go
+}
+```
 
 ### Naming conventions
 
@@ -181,3 +235,6 @@ func (u *URL) String() string {
 	return fmt.Sprintf("%s://%s/%s", u.Scheme, u.Host, u.Path)
 }
 ```
+
+
+# Misc

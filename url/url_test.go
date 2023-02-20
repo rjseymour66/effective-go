@@ -2,7 +2,6 @@ package url
 
 import (
 	"fmt"
-	"net/url"
 	"testing"
 )
 
@@ -26,6 +25,20 @@ func TestParse(t *testing.T) {
 
 	if got, want := u.Path, "go"; got != want {
 		t.Errorf("Parse(%q).Path = %q, want %q", rawurl, got, want)
+	}
+}
+
+func TestParseInvalidURLs(t *testing.T) {
+	tests := map[string]string{
+		"missing scheme": "foo.com",
+		"empty scheme":   "://foo.com",
+	}
+	for name, in := range tests {
+		t.Run(name, func(t *testing.T) {
+			if _, err := Parse(in); err == nil {
+				t.Errorf("Parse(%q)=nil, want an error", in)
+			}
+		})
 	}
 }
 
@@ -59,14 +72,28 @@ func TestURLHost(t *testing.T) {
 }
 
 func TestURLString(t *testing.T) {
-	u := &url.URL{
-		Scheme: "https",
-		Host:   "foo.com",
-		Path:   "go",
+	tests := map[string]struct {
+		url  *URL
+		want string
+	}{
+		"nil url":   {url: nil, want: ""},
+		"empty url": {url: &URL{}, want: ""},
+		"sheme":     {url: &URL{Scheme: "https"}, want: "https://"},
+		"host": {
+			url:  &URL{Scheme: "https", Host: "foo.com"},
+			want: "https://foo.com",
+		},
+		"path": {
+			url:  &URL{Scheme: "https", Host: "foo.com", Path: "go"},
+			want: "https://foo.com/go",
+		},
 	}
 
-	got, want := u.String(), "https://foo.com/go"
-	if got != want {
-		t.Errorf("%#v.String()\ngot  %q\nwant %q", u, got, want)
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			if g, w := tt.url, tt.want; g.String() != w {
+				t.Errorf("url: %#v\ngot:  %q\nwant: %q", g, g, w)
+			}
+		})
 	}
 }
