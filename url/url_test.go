@@ -97,3 +97,29 @@ func TestURLString(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkURLString(b *testing.B) {
+	b.ReportAllocs()
+	b.Logf("Loop %d times\n", b.N)
+
+	u := &URL{Scheme: "https", Host: "foo.com", Path: "go"}
+
+	for i := 0; i < b.N; i++ {
+		u.String()
+	}
+}
+
+// func BenchmarkURLString(b *testing.B) {
+// 	var benchmarks = []*URL{
+// 		{Scheme: "https"},
+// 		{Scheme: "https", Host: "foo.com"},
+// 		{Scheme: "https", Host: "foo.com", Path: "go"},
+// 	}
+// 	for _, u := range benchmarks {
+// 		b.Run(u.String(), func(b *testing.B) {
+// 			for i := 0; i < b.N; i++ {
+// 				u.String()
+// 			}
+// 		})
+// 	}
+// }

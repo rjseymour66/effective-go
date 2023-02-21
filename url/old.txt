@@ -1,0 +1,78 @@
+goos: linux
+goarch: amd64
+pkg: url/url
+cpu: Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz
+BenchmarkURLString-12    	 8937528	       140.9 ns/op	      64 B/op	       4 allocs/op
+--- BENCH: BenchmarkURLString-12
+    url_test.go:103: Loop 1 times
+    url_test.go:103: Loop 100 times
+    url_test.go:103: Loop 10000 times
+    url_test.go:103: Loop 1000000 times
+    url_test.go:103: Loop 7429278 times
+    url_test.go:103: Loop 8937528 times
+BenchmarkURLString-12    	 9141735	       136.1 ns/op	      64 B/op	       4 allocs/op
+--- BENCH: BenchmarkURLString-12
+    url_test.go:103: Loop 1 times
+    url_test.go:103: Loop 100 times
+    url_test.go:103: Loop 10000 times
+    url_test.go:103: Loop 1000000 times
+    url_test.go:103: Loop 9141735 times
+BenchmarkURLString-12    	 8724243	       131.7 ns/op	      64 B/op	       4 allocs/op
+--- BENCH: BenchmarkURLString-12
+    url_test.go:103: Loop 1 times
+    url_test.go:103: Loop 100 times
+    url_test.go:103: Loop 10000 times
+    url_test.go:103: Loop 1000000 times
+    url_test.go:103: Loop 8724243 times
+BenchmarkURLString-12    	 9020079	       132.2 ns/op	      64 B/op	       4 allocs/op
+--- BENCH: BenchmarkURLString-12
+    url_test.go:103: Loop 1 times
+    url_test.go:103: Loop 100 times
+    url_test.go:103: Loop 10000 times
+    url_test.go:103: Loop 1000000 times
+    url_test.go:103: Loop 9020079 times
+BenchmarkURLString-12    	 9086150	       134.3 ns/op	      64 B/op	       4 allocs/op
+--- BENCH: BenchmarkURLString-12
+    url_test.go:103: Loop 1 times
+    url_test.go:103: Loop 100 times
+    url_test.go:103: Loop 10000 times
+    url_test.go:103: Loop 1000000 times
+    url_test.go:103: Loop 9086150 times
+BenchmarkURLString-12    	 9133479	       142.7 ns/op	      64 B/op	       4 allocs/op
+--- BENCH: BenchmarkURLString-12
+    url_test.go:103: Loop 1 times
+    url_test.go:103: Loop 100 times
+    url_test.go:103: Loop 10000 times
+    url_test.go:103: Loop 1000000 times
+    url_test.go:103: Loop 9133479 times
+BenchmarkURLString-12    	 8986084	       138.4 ns/op	      64 B/op	       4 allocs/op
+--- BENCH: BenchmarkURLString-12
+    url_test.go:103: Loop 1 times
+    url_test.go:103: Loop 100 times
+    url_test.go:103: Loop 10000 times
+    url_test.go:103: Loop 1000000 times
+    url_test.go:103: Loop 7245391 times
+    url_test.go:103: Loop 8986084 times
+BenchmarkURLString-12    	 8859931	       146.1 ns/op	      64 B/op	       4 allocs/op
+--- BENCH: BenchmarkURLString-12
+    url_test.go:103: Loop 1 times
+    url_test.go:103: Loop 100 times
+    url_test.go:103: Loop 10000 times
+    url_test.go:103: Loop 1000000 times
+    url_test.go:103: Loop 8859931 times
+BenchmarkURLString-12    	 8829949	       139.3 ns/op	      64 B/op	       4 allocs/op
+--- BENCH: BenchmarkURLString-12
+    url_test.go:103: Loop 1 times
+    url_test.go:103: Loop 100 times
+    url_test.go:103: Loop 10000 times
+    url_test.go:103: Loop 1000000 times
+    url_test.go:103: Loop 8829949 times
+BenchmarkURLString-12    	 7915210	       142.9 ns/op	      64 B/op	       4 allocs/op
+--- BENCH: BenchmarkURLString-12
+    url_test.go:103: Loop 1 times
+    url_test.go:103: Loop 100 times
+    url_test.go:103: Loop 10000 times
+    url_test.go:103: Loop 1000000 times
+    url_test.go:103: Loop 7915210 times
+PASS
+ok  	url/url	15.690s

@@ -44,7 +44,102 @@ The cover tool uses three colors to identify code coverage:
 - green: sufficiently tested
 - red: not covered by tests
 
-To 
+## Benchmarks
+
+Benchmark your methods to determine their efficiency. Benchmark functions use the `BenchmarkXxx(b *testing.B)` signature. Place them in the `x_test.go` file with the other test functions.
+
+To write a benchmark function, call the method that you want to benchmark within a `for` loop in the `BenchmarkXxx` function. The `for` loop uses `b.N` as its upper bound. `b.N` helps adjust the test runner to properly measure performance. In addition, you can run the `b.ReportAllocs()` function to see how many memory allocations your code makes.
+
+For example, the following function benchmarks the `String()` method on the `URL` type:
+
+```go
+func BenchmarkURLString(b *testing.B) {
+	b.ReportAllocs()
+	b.Logf("Loop %d times\n", b.N)
+
+	u := &URL{Scheme: "https", Host: "foo.com", Path: "go"}
+
+	for i := 0; i < b.N; i++ {
+		u.String()
+	}
+}
+```
+To run the test, use the `-bench` flag. Use a dot (`.`) to run every benchmark in the package:
+
+```shell
+$ go test -bench .
+...
+BenchmarkURLString-12    	 8868142	       153.8 ns/op	      64 B/op	       4 allocs/op
+--- BENCH: BenchmarkURLString-12
+    ...
+PASS
+ok  	url/url	1.506s
+```
+
+The `B/op` column indicates that there were 64 bytes allocated in each operation. The `allocs/op` value indicates the number of memory allocations that made by the code in the benchmark.
+
+When you run benchmarks with the `-bench` flag, the regular tests run as well (use the `-v` flag to verify). If you want to run only the benchmark tests, use the `-run` flag with the `^$` regular expression:
+
+```shell
+$ go test -run=^$ -bench .
+```
+
+The `^$` regex tells the runner to ignore tests other than the benchmarks.
+
+### Sub-benchmarks
+
+You can run sub-benchmarks, just as you can run subtests:
+
+```go
+func BenchmarkURLString(b *testing.B) {
+    var benchmarks = []*URL{
+        {Scheme: "https"},
+        {Scheme: "https", Host: "foo.com"},
+        {Scheme: "https", Host: "foo.com", Path: "go"},
+    }
+    for _, u := range benchmarks {
+        b.Run(u.String(), func(b *testing.B) {
+            for i := 0; i < b.N; i++ {
+                u.String()
+            }
+        })
+    }
+}
+```
+
+### Comparing benchmarks
+
+1. Save the current benchmark result of the method:
+```shell
+go test -bench . -count 10 > old.txt
+```
+The `-count` flag runs the benchmark the number of times that you pass to it. There is no recommendation for the number you pass to `count`--`10` is a random number.
+
+2. Refactor your code.
+3. Run the benchmarks again and compare with `benchstat`.
+   First, install `benchstat`:
+   ```shell
+   $ go install golang.org/x/perf/cmd/benchstat@latest
+   ```
+   Next, compare the `old.txt` and `new.txt` files:
+   ```shell
+   $ benchstat old.txt new.txt 
+   goos: linux
+   goarch: amd64
+   pkg: url/url
+   cpu: Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz
+                │   old.txt    │               new.txt                │
+                │    sec/op    │    sec/op     vs base                │
+   URLString-12   138.85n ± 5%   99.70n ± 14%  -28.19% (p=0.000 n=10)
+
+                │  old.txt   │              new.txt               │
+                │    B/op    │    B/op     vs base                │
+   URLString-12   64.00 ± 0%   56.00 ± 0%  -12.50% (p=0.000 n=10)
+
+                │  old.txt   │              new.txt               │
+                │ allocs/op  │ allocs/op   vs base                │
+   URLString-12   4.000 ± 0%   3.000 ± 0%  -25.00% (p=0.000 n=10)
+   ```
 
 ## Methods
 
