@@ -294,17 +294,6 @@ func ExampleURL_fields(){...}
 ```
 
 
-## Short-if declaration
-
-`if variable := value; condition`
-
-For example:
-```go
-if err := json.Marshal(&val); err != nil {
-    // handle error
-}
-```
-
 # Interfaces
 
 When a type satisfies an interface, you say _type X is a Y_. For example, _URL is a Stringer_ or _Parser is a Reader_.
@@ -330,6 +319,58 @@ func (u *URL) String() string {
 	return fmt.Sprintf("%s://%s/%s", u.Scheme, u.Host, u.Path)
 }
 ```
+### testString
 
+Create a `testString()` function to return a concise string representation value for tests. For example, the following is the test version of the `String()` function in the previous section:
+
+```go
+func (u *URL) testString() string {
+	return fmt.Sprintf("scheme=%q, host=%q, path=%q", u.Scheme, u.Host, u.Path)
+}
+```
 
 # Misc
+
+## Short-if declaration
+
+`if variable := value; condition`
+
+For example:
+```go
+if err := json.Marshal(&val); err != nil {
+    // handle error
+}
+```
+
+## Named return values
+
+Name the returned values of a function so other developers can see what it returns without having to read the code.
+
+## ok return value
+
+If you are writing a helper function, do NOT return an error from the helper--return `ok bool`. This allows you to check the `ok` value in the caller and return the error there. For example:
+
+```go
+func Parse(rawurl string) (*URL, error) {
+
+	scheme, rest, ok := parseScheme(rawurl)
+	if !ok {
+		return nil, errors.New("missing scheme")
+	}
+    ...
+}
+
+func parseScheme(rawurl string) (scheme, rest string, ok bool) {
+	i := strings.Index(rawurl, "://")
+	if i < 1 {
+		return "", "", false
+	}
+	return rawurl[:i], rawurl[i+3:], true
+}
+```
+
+## Naked returns
+
+You can return from a function with just the `return` keyword. This is called a _naked return_. A naked return returns the current state of the result values.
+
+Generally, **do NOT** use naked returns because they impact readability.

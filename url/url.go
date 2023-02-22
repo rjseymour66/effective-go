@@ -2,6 +2,7 @@ package url
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -15,16 +16,13 @@ type URL struct {
 
 // Parse takes a raw URL string and returns a URL struct.
 func Parse(rawurl string) (*URL, error) {
-	i := strings.Index(rawurl, "://")
-	if i < 1 {
+
+	scheme, rest, ok := parseScheme(rawurl)
+	if !ok {
 		return nil, errors.New("missing scheme")
 	}
 
-	scheme, rest := rawurl[:i], rawurl[i+3:]
-	host, path := rest, ""
-	if i := strings.Index(rest, "/"); i >= 0 {
-		host, path = rest[:i], rest[i+1:]
-	}
+	host, path := parseHostPath(rest)
 
 	return &URL{
 		Scheme: scheme,
@@ -33,22 +31,42 @@ func Parse(rawurl string) (*URL, error) {
 	}, nil
 }
 
-// Port returns the port number from u.HOst, without the leading colon.
-func (u *URL) Port() string {
-	i := strings.Index(u.Host, ":")
-	if i < 0 {
-		return ""
+func parseScheme(rawurl string) (scheme, rest string, ok bool) {
+	return split(rawurl, "://", 1)
+}
+
+func parseHostPath(hostpath string) (host, path string) {
+	host, path, ok := split(hostpath, "/", 0)
+	if !ok {
+		host = hostpath
 	}
-	return u.Host[i+1:]
+	return host, path
 }
 
 // Hostname returns u.Host, and strips any port number, if present.
 func (u *URL) Hostname() string {
-	i := strings.Index(u.Host, ":")
-	if i < 0 {
-		return u.Host
+	host, _, ok := split(u.Host, ":", 0)
+	if !ok {
+		host = u.Host
 	}
-	return u.Host[:i]
+	return host
+}
+
+// Port returns the port number from u.HOst, without the leading colon.
+func (u *URL) Port() string {
+	_, port, _ := split(u.Host, ":", 0)
+	return port
+}
+
+// split s by sep.
+//
+// split returns empty strings if it couldn't find sep in s at index n.
+func split(s, sep string, n int) (a, b string, ok bool) {
+	i := strings.Index(s, sep)
+	if i < n {
+		return "", "", false
+	}
+	return s[:i], s[i+len(sep):], true
 }
 
 // String reassembles the URL into a URL string.
@@ -69,4 +87,8 @@ func (u *URL) String() string {
 		s.WriteString(p)
 	}
 	return s.String()
+}
+
+func (u *URL) testString() string {
+	return fmt.Sprintf("scheme=%q, host=%q, path=%q", u.Scheme, u.Host, u.Path)
 }
