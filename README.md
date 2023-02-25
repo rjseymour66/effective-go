@@ -17,6 +17,42 @@ if err != nil {
 
 To make a test fail and stop execution, use the `t.FailNow()` method.
 
+## External and internal tests
+
+Put both internal and external tests in the same folder as the code they test.
+
+_Internal tests_ verify code from the same package. They are called 'white-box tests' and can test exported and unexported identifiers.
+
+_External tests_ verify code from another package. They are called 'black-box tests'. External tests use the `_test` suffix for the package name. For example, `package url_test`.
+
+If you want to test an unexported function from an external test, you must export the function from the external test package. For example, the `parseScheme` function is unexported:
+
+```go
+// url.go
+package url
+
+func parseScheme() {...}
+```
+
+Create a new file in the same package that assigns the unexported function to an exported function:
+
+```go
+// export_test.go
+package url
+
+var ParseScheme = parseScheme
+```
+
+Finally, test the function in an external test file:
+
+```go
+// parse_scheme_test.go
+package url_test
+
+func TestParseScheme(t *testing.T) {...}
+```
+
+
 ## Test coverage
 
 View how much of your code is covered by tests:
@@ -226,6 +262,7 @@ import "github.com/rjs/url-parser/parser"
 |------|:-----------|:------|
 | %q   | Wraps the given string in double quotes. | |
 | %#v  | Prints the Go syntax representation of the value. | t.Errorf("%#v.String()\ngot  %q\nwant %q", u, got, want) |
+| %t   | Boolean values. |
 
 # nil
 

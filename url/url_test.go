@@ -6,7 +6,7 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	const rawurl = "https://host/some/fake/path"
+	const rawurl = "https://foo.com/go"
 
 	want := &URL{
 		Scheme: "https",
