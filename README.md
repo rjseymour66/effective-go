@@ -411,3 +411,31 @@ func parseScheme(rawurl string) (scheme, rest string, ok bool) {
 You can return from a function with just the `return` keyword. This is called a _naked return_. A naked return returns the current state of the result values.
 
 Generally, **do NOT** use naked returns because they impact readability.
+
+# Cross-compilation
+
+
+
+# CLI tools
+
+## Directory structure
+
+You create a tool that the user interacts with and is responsible for the following:
+- Parses the flags
+- Validates flags
+- Calls the business logic library
+
+Go uses the `cmd` directory for executables (the entry point) such as CLI tools. Within each `cmd/subdirectory`, you can name the entry point `main.go` or the name of the package, such as `hit.go`. Regardless of the file name, it must be in the `main` package because that package is what makes a file executable.
+
+Next, you have to create the tool library that contains the business logic. This is a standalone package, so use the name of the library that you are building.
+
+The following is a simple directory structure for the `hit` tool:
+
+```shell
+hit-tool
+├── cmd         # Executable directory
+│   └── hit     # CLI tool directory
+├── go.mod
+└── hit         # Library directory
+
+```
