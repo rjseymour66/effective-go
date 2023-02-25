@@ -414,6 +414,18 @@ Generally, **do NOT** use naked returns because they impact readability.
 
 # Cross-compilation
 
+Cross compile for multiple operating systems with a Makefile. Create a make target that compiles multiple binaries and places them in the `/bin` directory:
+
+```makefile
+compile:
+	# Linux
+	GOOS=linux GOARCH=amd64 go build -o ./bin/hit_linux_amd64 ./cmd/hit
+	# macOS
+	GOOS=darwin GOARCH=amd64 go build -o ./bin/hit_darwin_amd64 ./cmd/hit
+	# windows
+	GOOS=windows GOARCH=amd64 go build -o ./bin/hit_win_amd64.exe ./cmd/hit
+```
+> Make sure that you add the `/bin` directory to the `.gitignore` file.
 
 
 # CLI tools
