@@ -414,9 +414,9 @@ Generally, **do NOT** use naked returns because they impact readability.
 
 # Cross-compilation
 
-You need to know the `GOOS` and `GOOARCH` 
+You need to know the `GOOS` and `GOOARCH` values to compile the correct binaries.
 
-Cross compile for multiple operating systems with a Makefile. Create a make target that compiles multiple binaries and places them in the `/bin` directory:
+Next, you can cross compile for multiple operating systems with a Makefile. Create a make target that compiles multiple binaries and places them in the `/bin` directory:
 
 ```makefile
 compile:
