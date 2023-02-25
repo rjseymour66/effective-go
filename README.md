@@ -432,6 +432,72 @@ compile:
 
 # CLI tools
 
+## flag package
+
+Go provides flag definition functions for common primitive types (`string`, `int`, etc.). A flag definition contains information about the flag such as defaults and usage information. The flag package parses command line flags with this flag definition.
+
+The flag definition function can create internal variables for the flag and return a pointer to that variable, or it can use a variable that you define. For example, if you are defining a `string` flag, you use the `flag.String(...)` function to return a pointer to an internal variable, or you can use the `flag.StringVar(&userVar, ...)` to provide your own variable for the flag definition. `flag.*Var()` functions provide more control over variable definitions.
+
+Each flag definition is saved in a structure called `*Flagset` for tracking. The flag package uses the `CommandLine` flag set when you define a flag.
+
+The `Parse()` function extracts each command line flag in the `*Flagset` and creates name/value pairs, where the name is the flag name, and the value is the argument provided to the flag. Next, it updates any command line flag's internal variable.
+
+### Usage
+You can replace the type that displays beside the flag in usage. In the usage string, enclose the replacement word in backticks (``).
+
+
+### Manual implementation
+
+```go
+type flags struct {
+	url  string
+	n, c int
+}
+
+// parseFunc is a command-line flag parser function
+type parseFunc func(string) error
+
+func (f *flags) parse() (err error) {
+	// map of flag names and parsers
+	parsers := map[string]parseFunc{
+		"url": f.urlVar(&f.url),
+		"n":   f.intVar(&f.n),
+		"c":   f.intVar(&f.c),
+	}
+
+	for _, arg := range os.Args[1:] {
+		n, v, ok := strings.Cut(arg, "=")
+		if !ok {
+			continue // can't parse the flag
+		}
+		parse, ok := parsers[strings.TrimPrefix(n, "-")]
+		if !ok {
+			continue // can't find parser
+		}
+		if err := parse(v); err != nil {
+			err = fmt.Errorf("invalid value %q for flag %s: %w", v, n, err)
+			break
+		}
+	}
+	return err
+}
+
+func (f *flags) urlVar(p *string) parseFunc {
+	return func(s string) error {
+		_, err := url.Parse(s)
+		*p = s
+		return err
+	}
+}
+
+func (f *flags) intVar(p *int) parseFunc {
+	return func(s string) (err error) {
+		*p, err = strconv.Atoi(s)
+		return err
+	}
+}
+```
+
 ## Directory structure
 
 You create a tool that the user interacts with and is responsible for the following:
