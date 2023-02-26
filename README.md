@@ -222,8 +222,21 @@ func TestTable(t *testing.T) {
 ```
 ## Testing the main method
 
+The `main` method uses globals, which you cannot easily test. The trick is to put the logic into the `run()` function. You can inject the globals to the `run` function, and you can mimic those values during tests.
 
+The flag package uses `NewFlagSet` function to create the default flag set, `CommandLine`.
 
+## Build tags 
+
+Add build tags at the top of test files so you can specify whether or not you want to run them in your test commands. For example, the following build tag designates the file for go tests that use the `cli` tag:
+
+```go
+//go:build cli
+```
+To run tests in this file, run the following command:
+```shell
+$ go test -tags=cli
+```
 
 # Packages
 
