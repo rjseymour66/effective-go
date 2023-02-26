@@ -220,6 +220,9 @@ func TestTable(t *testing.T) {
     }
 }
 ```
+## Testing the main method
+
+
 
 
 # Packages
@@ -368,6 +371,10 @@ func (u *URL) testString() string {
 
 # Misc
 
+## strconv.ParseInt
+
+Prefer `strconv.ParseInt()` over `strconv.Atoi()` because the former can parse hex and numbers with underscores (`1_000`).
+
 ## Short-if declaration
 
 `if variable := value; condition`
@@ -442,8 +449,12 @@ Each flag definition is saved in a structure called `*Flagset` for tracking. The
 
 The `Parse()` function extracts each command line flag in the `*Flagset` and creates name/value pairs, where the name is the flag name, and the value is the argument provided to the flag. Next, it updates any command line flag's internal variable.
 
-### Usage
-You can replace the type that displays beside the flag in usage. In the usage string, enclose the replacement word in backticks (``).
+### Changing flag usage type
+
+You can replace the type that displays beside the flag in usage. In the usage string, enclose the replacement word in backticks (\`\`). For example, the following `flag.StringVar()` function accepts a `string` type by default. You can change that to a `URL` type with backticks:
+```go
+flag.StringVar(&f.url, "url", "", "HTTP server `URL` to make requests (required)")
+```
 
 
 ### Manual implementation
@@ -497,6 +508,50 @@ func (f *flags) intVar(p *int) parseFunc {
 	}
 }
 ```
+
+## Custom flag types
+
+First, create a new type that satisfies the `Value` interface:
+```go
+type Value interface {
+    Set(string)
+    String() string
+}
+```
+
+Next, register the type to the default flag set with `Var()`. Then, `Parse` can handle the flag.
+
+## Positional arguments
+
+Define `flag.Usage` as a function that prints usage text that is defined as a variable, and then the usage messages for the optional arguments:
+
+```go
+const usageText = `
+Usage:
+  hit [options] url
+Options:`
+
+...
+func funcName() {
+	flag.Usage = func() {
+		fmt.Fprintln(os.Stderr, usageText[1:])
+		flag.PrintDefaults()
+	}
+
+	flag.Var(toNumber(&f.n), "n", "Number of requests to make")
+	flag.Var(toNumber(&f.c), "c", "Concurrency level")
+	flag.Parse()
+
+	f.url = flag.Arg(0)
+    
+    ...
+}
+```
+In the previous example:
+- `url` is the positional argument. It is included in the `usageText` constant.
+- `flag.PrintDefaults()` method prints the usage information for the 
+- `flag.Arg(0)` stores the first argument after the flag.
+
 
 ## Directory structure
 
