@@ -1,5 +1,7 @@
 # Effective Go
 
+[Learn Go Programming](https://blog.learngoprogramming.com/)
+
 # Testing
 
 In Go, a _unit_ is a package, and a _unit test_ verifies the behavior of a single package.
@@ -588,3 +590,18 @@ hit-tool
 └── hit         # Library directory
 
 ```
+
+# HTTP Clients
+
+The HTTP protocol exchanges plain text messages between a server and client: the client sends a request with a simple text message, and the server returns a response body.
+
+## Design
+
+An HTTP client should have a `Client` type that sends requests, and a `Results` type that models the server response.
+
+Things to consider when designing a client:
+- Easy to use
+- Hides internal complexity
+- Consists of composable parts that users can bring together
+- Synchronous by default
+- Allow users to fine-tune API behavior

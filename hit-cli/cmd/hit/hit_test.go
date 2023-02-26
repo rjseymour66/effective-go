@@ -58,7 +58,7 @@ func TestRun(t *testing.T) {
 			if err := e.run(); err != nil {
 				t.Fatalf("\ngot %q;\nwant nil err", err)
 			}
-			if out := e.stdout.String(); !strings.Contains(tt.out, out) {
+			if out := e.stdout.String(); !strings.Contains(out, tt.out) {
 				t.Errorf("\ngot:\n%s\nwant %q", out, tt.out)
 			}
 		})
