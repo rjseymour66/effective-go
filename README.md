@@ -237,6 +237,7 @@ To run tests in this file, run the following command:
 ```shell
 $ go test -tags=cli
 ```
+For additional details, see [Build constraints](https://pkg.go.dev/cmd/go#hdr-Build_constraints).
 
 # Packages
 
