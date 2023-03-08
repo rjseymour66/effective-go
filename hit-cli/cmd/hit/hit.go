@@ -1,9 +1,9 @@
 package main
 
 import (
+	"effective-go/hit-cli/hit"
 	"flag"
 	"fmt"
-	"hit-cli/hit"
 	"io"
 	"net/http"
 	"os"

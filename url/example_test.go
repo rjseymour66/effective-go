@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"url/url"
+	"effective-go/url"
 )
 
 func ExampleURL() {

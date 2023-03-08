@@ -1,8 +1,8 @@
 package url_test
 
 import (
+	"effective-go/url"
 	"testing"
-	"url/url"
 )
 
 func TestParseScheme(t *testing.T) {
