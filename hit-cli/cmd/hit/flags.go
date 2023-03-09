@@ -10,8 +10,8 @@ import (
 )
 
 type flags struct {
-	url  string
-	n, c int
+	url       string
+	n, c, rps int
 }
 
 const usageText = `
@@ -53,6 +53,7 @@ func (f *flags) parse(s *flag.FlagSet, args []string) (err error) {
 
 	s.Var(toNumber(&f.n), "n", "Number of requests to make")
 	s.Var(toNumber(&f.c), "c", "Concurrency level")
+	s.Var(toNumber(&f.rps), "t", "Throttle requests per second")
 
 	if err := s.Parse(args); err != nil {
 		return err
