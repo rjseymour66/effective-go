@@ -1,13 +1,17 @@
 package main
 
 import (
+	"context"
 	"effective-go/hit-cli/hit"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"os/signal"
 	"runtime"
+	"time"
 )
 
 const bannerText = `
@@ -49,12 +53,23 @@ func run(s *flag.FlagSet, args []string, out io.Writer) error {
 	}
 
 	c := &hit.Client{
-		C:   f.c,
-		RPS: f.rps,
+		C:       f.c,
+		RPS:     f.rps,
+		Timeout: 10 * time.Second,
 	}
 
-	sum := c.Do(request, f.n)
+	const timeout = time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
+	defer cancel()
+	defer stop()
+
+	sum := c.Do(ctx, request, f.n)
 	sum.Fprint(out)
+
+	if err := ctx.Err(); errors.Is(err, context.DeadlineExceeded) {
+		return fmt.Errorf("timed out in %s", timeout)
+	}
 
 	return nil
 }

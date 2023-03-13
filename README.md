@@ -608,6 +608,28 @@ Things to consider when designing a client:
 
 ## Client type
 
+[httbin.org](http://httpbin.org/) test server.
+
+### Client Connections
+
+TCP connections are expensive, so the HTTP protocol has a caching mechanism called _keep-alive_ that keeps established client/server connections open until a timeout. Then, a client can use the same connection to send HTTP requests without establishing a new connection.
+
+Go's `DefaultClient` keeps 100 connections open and only allows you to reuse 2. You can optimize the connection pool with the Go [`Transport`](https://pkg.go.dev/net/http#Transport) type.
+
+
+### Responses
+
+You read a response body incrementally, as a stream of bytes. Create a `bytes.Buffer` and read the stream little by little until you read the entire body.
+
+> Use an `io.Reader` to read any resource, and use an `io.Writer` to write to any resource. You can also use [`io.Copy(w, r)`](https://pkg.go.dev/io#Copy) that writes directly to a writer from a reader. Use the [`Discard`](https://pkg.go.dev/io#Discard) variable (of type `Writer`) to discard anything after you read it. You can treat `Discard` as `/dev/null`. This method preserves resources.
+
+# Testing HTTP Clients 
+
+Create handlers depending on what you want to test. For example, if you want to test successful HTTP requests:
+1. Create a handler that responds with HTTP status code 200
+2. Launch a test server with `httptest.NewServer(handler)`. For testing criteria:
+   - Request: input
+   - ResponseWriter: output
 
 
 
@@ -645,3 +667,11 @@ func Throttle(in <-chan *http.Request, out chan<- *http.Request, delay time.Dura
 }
 ```
 The `<-t.C` line blocks the `for range` loop until the ticker sends a value every _n_ seconds. When the `t.C` channel unblocks, then the function can send a request from the `in` channel to the `out` channel.
+
+# Context
+
+A function that accepts a context should always check if the context is canceled.
+
+`Background` creates a non-cancelable context. Then, you can derive a cancelable timeout context using the `WithTimeout` function.
+
+The signal package has a NotifyContext function to catch an OS signal.
