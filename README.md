@@ -435,6 +435,15 @@ You can return from a function with just the `return` keyword. This is called a 
 
 Generally, **do NOT** use naked returns because they impact readability.
 
+## blank identifiers
+
+You can use blank identifiers in function definitions:
+```go
+handler := func(_ http.ResponseWriter, _ *http.Request) {
+	// logic
+}
+```
+
 # Cross-compilation
 
 You need to know the `GOOS` and `GOOARCH` values to compile the correct binaries.
@@ -630,6 +639,51 @@ Create handlers depending on what you want to test. For example, if you want to 
 2. Launch a test server with `httptest.NewServer(handler)`. For testing criteria:
    - Request: input
    - ResponseWriter: output
+
+The test server requires a handler to handle requests and responses. The `Handler` interface has the following signature:
+
+```go 
+type Handler interface {
+	ServeHTTP(ResponseWriter, *Request)
+}
+```
+`Request` is the input, and `ResponseWriter` handles the output. After you create a handler that satisfies this interface, you pass it to the `NewServer` function to launch the test server. `NewServer` returns a `Server` server that contains a `URL` value to send requests.
+
+Instead of writing an entirely new type to satisfy the `Handler` interface, Go provides the [`HandlerFunc` type](https://pkg.go.dev/net/http#HandlerFunc--a function that has a `ServeHTTP` method. This means that you can create a function that performs some action with a `Request` and `ResponseWriter`, then you can pass it to `HandlerFunc` to start a test server.
+
+So, Go provides the `HandlerFunc` type:
+```go 
+type HandlerFunc func(ResponseWriter, *Request)
+ 
+func (f HandlerFunc) ServeHTTP(w ResponseWriter, r *Request) {
+    // Forwards the call to the converted function.
+    f(w, r)
+}
+```
+1. Create a function with the same signature as HandlerFunc:
+   ```go
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		// logic
+	}
+   ```
+2. Convert that function to a `Handler` type with the `HandlerFunc`. `HandlerFunc` is an adapter that creates HTTP handlers from ordinary functions:
+   ```go
+	httpHandler := http.HandlerFunc(handler)
+   ```
+3. Pass the new handler to the `http.HandlerFunc(func)` method.
+   ```go
+	server := httptest.NewServer(httpHandler)
+   ```
+HTTP handlers in GO are concurrent, so the test server handles each request in its own goroutine. When you are tracking the number of requests, you should use the `atomic` package's concurrency-safe counters.
+
+
+## httptest server
+
+[httptest](https://pkg.go.dev/net/http/httptest)
+
+Prefer the `.Cleanup(server.Close)` function over `defer` functions when testing. The `Cleanup` function runs after the tests complete rather than the enclosing function. This is useful with test helpers.
+
+
 
 
 
