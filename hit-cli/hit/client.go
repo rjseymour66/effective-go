@@ -2,6 +2,7 @@ package hit
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"runtime"
 	"time"
@@ -15,8 +16,35 @@ type Client struct {
 	Timeout time.Duration
 }
 
+// Option changes the Client's behavior.
+type Option func(*Client)
+
+// Concurrency changes the Client's concurrency level.
+func Concurrency(n int) Option {
+	return func(c *Client) { c.C = n }
+}
+
+// Timeout changes the Client's concurrency level.
+func Timeout(d time.Duration) Option {
+	return func(c *Client) { c.Timeout = d }
+}
+
+// Do sends n GET requests to the url usig as many goroutines as the
+// number of CPUs on the machine and returns an aggregated result.
+func Do(ctx context.Context, url string, n int, opts ...Option) (*Result, error) {
+	r, err := http.NewRequest(http.MethodGet, url, http.NoBody)
+	if err != nil {
+		return nil, fmt.Errorf("new http request: %w", err)
+	}
+	var c Client
+	for _, o := range opts {
+		o(&c)
+	}
+	return c.Do(ctx, r, n), nil
+}
+
 // Do sends an HTTP request and returns an aggregated result.
-func (c *Client) Do(ctx context.Context, r *http.Request, n int) *Result {
+func (c *Client) Do(ctx context.Context, r *http.Request, n int, opts ...Option) *Result {
 	t := time.Now()
 	sum := c.do(ctx, r, n)
 	return sum.Finalize(time.Since(t))
