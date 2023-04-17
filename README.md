@@ -466,6 +466,7 @@ compile:
 
 ## flag package
 
+--- moved to docs
 Go provides flag definition functions for common primitive types (`string`, `int`, etc.). A flag definition contains information about the flag such as defaults and usage information. The flag package parses command line flags with this flag definition.
 
 The flag definition function can create internal variables for the flag and return a pointer to that variable, or it can use a variable that you define. For example, if you are defining a `string` flag, you use the `flag.String(...)` function to return a pointer to an internal variable, or you can use the `flag.StringVar(&userVar, ...)` to provide your own variable for the flag definition. `flag.*Var()` functions provide more control over variable definitions.
@@ -473,6 +474,8 @@ The flag definition function can create internal variables for the flag and retu
 Each flag definition is saved in a structure called `*Flagset` for tracking. The flag package uses the `CommandLine` flag set when you define a flag.
 
 The `Parse()` function extracts each command line flag in the `*Flagset` and creates name/value pairs, where the name is the flag name, and the value is the argument provided to the flag. Next, it updates any command line flag's internal variable.
+
+---
 
 ### Changing flag usage type
 
