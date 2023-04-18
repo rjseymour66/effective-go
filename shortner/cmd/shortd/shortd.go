@@ -18,13 +18,6 @@ func main() {
 
 	fmt.Fprintln(os.Stderr, "starting the server on", addr)
 
-	// shortener := http.HandlerFunc(
-	// 	func(w http.ResponseWriter, r *http.Request) {
-	// 		fmt.Fprintln(w, "hello from the shortener server!")
-	// 		// w.Write([]byte("hello from the shortener server!"))
-	// 	},
-	// )
-
 	shortener := short.NewServer()
 
 	server := &http.Server{
